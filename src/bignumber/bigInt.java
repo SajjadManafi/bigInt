@@ -51,6 +51,9 @@ public class bigInt {
     }
 
     bigInt subtract(bigInt a){
+        bigInt[] sortedBigInts = bigInt.sort(a , this);
+        bigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
+
         return bigInt.fromString("+1");
     }
 
@@ -112,6 +115,33 @@ public class bigInt {
     private static bigInt min(bigInt a , bigInt b){
         if (a.digits.length <= b.digits.length) return a;
         else return b;
+    }
+
+    private static bigInt[] sort(bigInt a, bigInt b){
+        bigInt[] sortedBigInts = new bigInt[2];
+        sortedBigInts[0] = a;
+        sortedBigInts[1] = b;
+        if (a.digits.length > b.digits.length) {
+         // nothing
+        }
+        else if (b.digits.length > a.digits.length){
+            sortedBigInts[0] = b;
+            sortedBigInts[1] = a;
+        }
+        else{
+
+            for (int i = 0; i < a.digits.length; i++) {
+                if ((int) a.digits[i] > (int) b.digits[i]){
+                    break;
+                }
+                else if ((int) a.digits[i] < (int) b.digits[i]){
+                    sortedBigInts[0] = b;
+                    sortedBigInts[1] = a;
+                    break;
+                }
+            }
+        }
+        return sortedBigInts;
     }
 
 
