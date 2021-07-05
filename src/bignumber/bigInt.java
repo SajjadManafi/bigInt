@@ -64,7 +64,16 @@ public class bigInt {
         return new bigInt(digits , sign);
     }
 
-
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        if (sign == bignumber.sign.positive) str.append("+");
+        else str.append("-");
+        for (int i = digits.length - 1; i >= 0 ; i--) {
+            str.append(digits[i]);
+        }
+        return str.toString();
+    }
 
 
 
