@@ -4,26 +4,50 @@ import java.util.Arrays;
 
 public class bigInt {
 
+    // number digits and sign
     private byte[] digits;
     private sign sign;
 
+    // constructor
     private bigInt(byte[] digits, sign sign) {
         setDigits(digits);
         setSign(sign);
     }
 
+    // digits setter
     private void setDigits(byte[] digits) {
         this.digits = digits;
     }
 
+    // sign setter
     private void setSign(bignumber.sign sign) {
         this.sign = sign;
     }
 
-
+    // Addition of two numbers
     bigInt add(bigInt a){
+        int temp = 0;
+        int maxLen = bigInt.max(a , this).digits.length;
+        byte[] sumDigits = new byte[maxLen+1];
+        int one , two , sum = 0 , j = 0;
 
-        return bigInt.fromString("+1");
+        for (int i = 0; i < maxLen; i++) {
+            one = 0; two = 0;
+            if (i < a.digits.length) one = a.digits[i];
+            if (i < digits.length) two = digits[i];
+            sum = one + two + temp;
+            temp = 0;
+            if (sum >= 10){
+                temp = 1;
+                sum -= 10;
+            }
+
+
+            sumDigits[j++] = (byte) sum;
+            if (j == sumDigits.length - 1 && temp == 1) sumDigits[j] = (byte) 1;
+
+        }
+        return new bigInt(sumDigits , sign);
     }
 
     bigInt subtract(bigInt a){
@@ -38,6 +62,7 @@ public class bigInt {
         return bigInt.fromString("+1");
     }
 
+    // create bigInt from String
     public static bigInt fromString(String s){
 
         boolean hasSign = false;
@@ -64,25 +89,38 @@ public class bigInt {
         return new bigInt(digits , sign);
     }
 
+    // to String
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
+        // append sign
         if (sign == bignumber.sign.positive) str.append("+");
         else str.append("-");
+        // append digits
         for (int i = digits.length - 1; i >= 0 ; i--) {
             str.append(digits[i]);
         }
         return str.toString();
     }
 
+    // getting a larger number between two numbers
     private static bigInt max(bigInt a , bigInt b){
         if (a.digits.length >= b.digits.length) return a;
         else return b;
     }
-
+    // getting a smaller number between two numbers
     private static bigInt min(bigInt a , bigInt b){
         if (a.digits.length <= b.digits.length) return a;
         else return b;
+    }
+
+
+    public static void main(String[] args) {
+        bigInt a = bigInt.fromString("238432847237422862525452454257498545845845237432438264329843");
+        bigInt b = bigInt.fromString("5848574752764137329329319585465645374314813493818197547245532");
+
+        bigInt sum = a.add(b);
+        System.out.println(sum);
     }
 
 
