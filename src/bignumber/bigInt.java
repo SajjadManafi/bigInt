@@ -21,7 +21,22 @@ public class bigInt {
     }
 
 
+    bigInt add(bigInt a){
 
+        return bigInt.fromString("+1");
+    }
+
+    bigInt subtract(bigInt a){
+        return bigInt.fromString("+1");
+    }
+
+    bigInt multyply(bigInt a){
+        return bigInt.fromString("+1");
+    }
+
+    bigInt divide(bigInt a){
+        return bigInt.fromString("+1");
+    }
 
     public static bigInt fromString(String s){
 
