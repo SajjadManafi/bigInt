@@ -75,6 +75,15 @@ public class bigInt {
         return str.toString();
     }
 
+    private static bigInt max(bigInt a , bigInt b){
+        if (a.digits.length >= b.digits.length) return a;
+        else return b;
+    }
+
+    private static bigInt min(bigInt a , bigInt b){
+        if (a.digits.length <= b.digits.length) return a;
+        else return b;
+    }
 
 
 }
