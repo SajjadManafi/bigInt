@@ -1,5 +1,8 @@
 package bignumber;
 
+import java.lang.Math;
+import java.util.Arrays;
+
 public class bigInt {
 
     // number digits and sign
@@ -27,6 +30,7 @@ public class bigInt {
         int temp = 0;
         int maxLen = bigInt.max(a, this).digits.length;
         byte[] sumDigits = new byte[maxLen + 1];
+
         int one, two, sum = 0, j = 0;
 
         for (int i = 0; i < maxLen; i++) {
@@ -46,7 +50,9 @@ public class bigInt {
             if (j == sumDigits.length - 1 && temp == 1) sumDigits[j] = (byte) 1;
 
         }
-        return new bigInt(sumDigits, sign);
+
+        byte[] sumDigitsWZ = bigInt.removeZeroFromEnd(sumDigits);
+        return new bigInt(sumDigitsWZ, sign);
     }
 
     bigInt subtract(bigInt a) {
@@ -56,7 +62,7 @@ public class bigInt {
         if (larger == a) sign = bignumber.sign.negative;
         byte[] resDigits = new byte[larger.digits.length];
         int one, two;
-        for (int i  = 0; i < larger.digits.length; i++) {
+        for (int i = 0; i < larger.digits.length; i++) {
             one = larger.digits[i];
             two = 0;
             if (i < smaller.digits.length) two = smaller.digits[i];
@@ -66,11 +72,12 @@ public class bigInt {
                 one += 10;
             }
 
-            resDigits[i] = (byte)(one - two);
+            resDigits[i] = (byte) (one - two);
 
 
         }
-        return new bigInt(resDigits , sign);
+        byte[] resDigitsWZ = bigInt.removeZeroFromEnd(resDigits);
+        return new bigInt(resDigitsWZ, sign);
     }
 
     bigInt multiply(bigInt a) {
@@ -89,14 +96,13 @@ public class bigInt {
 
                 if (sum >= 10) {
                     ones = sum % 10;
-                    temp = ( sum - ones ) / 10;
-                }
-                else ones = sum;
+                    temp = (sum - ones) / 10;
+                } else ones = sum;
 
                 resDigits[state++] = (byte) ones;
-                if (d == a.digits.length -1) resDigits[state] = (byte) temp;
+                if (d == a.digits.length - 1) resDigits[state] = (byte) temp;
             }
-            bigInt res = new bigInt(resDigits , bignumber.sign.positive);
+            bigInt res = new bigInt(resDigits, bignumber.sign.positive);
             multiRes[i] = res;
         }
         bigInt sum = multiRes[0];
@@ -105,13 +111,70 @@ public class bigInt {
         }
         if (a.sign != sign) sum.setSign(bignumber.sign.negative);
         else sum.sign = bignumber.sign.positive;
-
-        return sum;
+        return new bigInt(removeZeroFromEnd(sum.digits), sum.sign);
     }
 
-    bigInt divide(bigInt a) {
-        return bigInt.fromString("+1");
+    bigInt divide2(bigInt a) {
+        bigInt dividend = this, divisor = a;
+        dividend.setSign(bignumber.sign.positive);
+        divisor.setSign(bignumber.sign.positive);
+        int maxLen = bigInt.max(dividend, divisor).digits.length;
+        byte[] quotient = new byte[maxLen];
+        bigInt[] sortedBigInts = bigInt.sort(dividend, divisor);
+        bigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
+        if (!dividend.equals(larger)) return bigInt.fromString("0");
+        if (divisor.equals(bigInt.fromString("0"))) throw new IllegalArgumentException("Argument 'divisor' is 0");
+        int state = 0;
+        while (dividend.equals(larger) && dividend.sign == bignumber.sign.positive) {
+            for (int i = 0; i < dividend.digits.length; i++) {
+                if (dividend.sign == bignumber.sign.positive) {
+                    byte[] splittedDividend = new byte[i + 1];
+                    int d = 0;
+                    for (int j = dividend.digits.length - 1; j >= dividend.digits.length - 1 - i; j--) {
+                        splittedDividend[d++] = dividend.digits[j];
+                    }
+                    bigInt.reverse(splittedDividend);
+                    bigInt tempDividend = new bigInt(splittedDividend, bignumber.sign.positive);
+                    bigInt[] sortedDividendAndDivisor = bigInt.sort(divisor, tempDividend);
+                    if (!tempDividend.equals(sortedDividendAndDivisor[0])) continue;
+                    else {
+
+                        for (int j = 1; j < Integer.MAX_VALUE; j++) {
+                            bigInt tempQuotient = bigInt.fromString(Integer.toString(j));
+                            bigInt multiplyRes = tempQuotient.multiply(divisor);
+                            bigInt[] sortedMultiAndtempDividend = bigInt.sort(multiplyRes, tempDividend);
+
+                            if (tempDividend.equals(sortedMultiAndtempDividend[0])) continue;
+                            else {
+                                tempQuotient = bigInt.fromString(Integer.toString(j - 1));
+                                quotient[state++] = (byte) (j - 1);
+
+                                multiplyRes = tempQuotient.multiply(divisor);
+                                multiplyRes.setSign(bignumber.sign.negative);
+                                bigInt tempRemainder = tempDividend.subtract(multiplyRes);
+                                int RemainderMultiplyPow = (int) Math.pow(10.0, (double) (dividend.digits.length - tempDividend.digits.length));
+                                bigInt RemainderForAddToDividend = tempRemainder.multiply(bigInt.fromString(Integer.toString(RemainderMultiplyPow)));
+                                int tDivdendFSPow = (int) Math.pow(10.0, (double) (tempDividend.digits.length - 1));
+                                bigInt tempDividendForSubtract = tempDividend.multiply(bigInt.fromString(Integer.toString(tDivdendFSPow)));
+                                dividend = dividend.subtract(tempDividendForSubtract).add(RemainderForAddToDividend);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else break;
+            }
+
+
+            sortedBigInts = bigInt.sort(dividend, divisor);
+            larger = sortedBigInts[0];
+            smaller = sortedBigInts[1];
+        }
+
+        return new bigInt(quotient, bignumber.sign.positive);
     }
+
+    
 
     // create bigInt from String
     public static bigInt fromString(String s) {
@@ -178,7 +241,7 @@ public class bigInt {
             sortedBigInts[1] = a;
         } else {
 
-            for (int i = a.digits.length -1 ; i >= 0; i--) {
+            for (int i = a.digits.length - 1; i >= 0; i--) {
                 if ((int) a.digits[i] > (int) b.digits[i]) {
                     break;
                 } else if ((int) a.digits[i] < (int) b.digits[i]) {
@@ -191,11 +254,11 @@ public class bigInt {
         return sortedBigInts;
     }
 
-    private void getTempNumberIndex(int currentState){
+    private void getTempNumberIndex(int currentState) {
         for (int i = currentState + 1; i < digits.length; i++) {
             if ((int) digits[i] > 0) {
                 digits[i] -= 1;
-                for (int j = i-1; j > currentState; j--) {
+                for (int j = i - 1; j > currentState; j--) {
                     digits[j] += 9;
                 }
                 break;
@@ -204,16 +267,45 @@ public class bigInt {
 
     }
 
+    private static void reverse(byte[] array) {
+        if (array == null) {
+            return;
+        }
+        int i = 0;
+        int j = array.length - 1;
+        byte tmp;
+        while (j > i) {
+            tmp = array[j];
+            array[j] = array[i];
+            array[i] = tmp;
+            j--;
+            i++;
+        }
+    }
+
+    private static byte[] removeZeroFromEnd(byte[] array) {
+        int index = 0;
+        for (int i = array.length - 1; i >= 0; i--) {
+            if ((int) array[i] > 0) {
+                index = i + 1;
+                break;
+            }
+        }
+        byte[] arrayWithoutZero = new byte[index];
+        arrayWithoutZero = Arrays.copyOfRange(array, 0, index);
+        return arrayWithoutZero;
+    }
+
 
     public static void main(String[] args) {
         bigInt a = bigInt.fromString("473246187432742884343324823");
         bigInt b = bigInt.fromString("293482384327647323824343434");
-        bigInt c = bigInt.fromString("473246187432742884343324823");
-        bigInt d = bigInt.fromString("-293482384327647323824343434");
+        bigInt c = bigInt.fromString("138889419461730068178527079418521936494040048569262182");
+        bigInt d = bigInt.fromString("293482384327647323824343434");
 
-        bigInt sum = a.add(b);
+        bigInt sum = c.add(d);
         bigInt alo = b.subtract(a);
-        bigInt zarb = c.multiply(d);
+        bigInt zarb = c.divide(d);
         System.out.println(sum);
         System.out.println(alo);
         System.out.println(zarb);
