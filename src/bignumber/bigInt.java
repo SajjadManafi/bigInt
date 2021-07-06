@@ -74,7 +74,7 @@ public class bigInt {
     }
 
     bigInt multiply(bigInt a) {
-        bigInt[] multysRes = new bigInt[digits.length];
+        bigInt[] multiRes = new bigInt[digits.length];
 
         for (int i = 0; i < digits.length; i++) {
             int temp = 0, state = 0;
@@ -97,11 +97,11 @@ public class bigInt {
                 if (d == a.digits.length -1) resDigits[state] = (byte) temp;
             }
             bigInt res = new bigInt(resDigits , bignumber.sign.positive);
-            multysRes[i] = res;
+            multiRes[i] = res;
         }
-        bigInt sum = multysRes[0];
-        for (int i = 1; i < multysRes.length; i++) {
-            sum = sum.add(multysRes[i]);
+        bigInt sum = multiRes[0];
+        for (int i = 1; i < multiRes.length; i++) {
+            sum = sum.add(multiRes[i]);
         }
         if (a.sign != sign) sum.setSign(bignumber.sign.negative);
         else sum.sign = bignumber.sign.positive;
