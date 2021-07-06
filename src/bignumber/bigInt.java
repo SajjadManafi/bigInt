@@ -1,7 +1,5 @@
 package bignumber;
 
-import java.util.Arrays;
-
 public class bigInt {
 
     // number digits and sign
@@ -75,8 +73,40 @@ public class bigInt {
         return new bigInt(resDigits , sign);
     }
 
-    bigInt multyply(bigInt a) {
-        return bigInt.fromString("+1");
+    bigInt multiply(bigInt a) {
+        bigInt[] multysRes = new bigInt[digits.length];
+
+        for (int i = 0; i < digits.length; i++) {
+            int temp = 0, state = 0;
+            byte[] resDigits = new byte[i + a.digits.length + 1];
+            for (int j = 0; j < i; j++) {
+                resDigits[state++] = (byte) 0;
+            }
+            for (int d = 0; d < a.digits.length; d++) {
+                int sum = digits[i] * a.digits[d] + temp;
+                temp = 0;
+                int ones;
+
+                if (sum >= 10) {
+                    ones = sum % 10;
+                    temp = ( sum - ones ) / 10;
+                }
+                else ones = sum;
+
+                resDigits[state++] = (byte) ones;
+                if (d == a.digits.length -1) resDigits[state] = (byte) temp;
+            }
+            bigInt res = new bigInt(resDigits , bignumber.sign.positive);
+            multysRes[i] = res;
+        }
+        bigInt sum = multysRes[0];
+        for (int i = 1; i < multysRes.length; i++) {
+            sum = sum.add(multysRes[i]);
+        }
+        if (a.sign != sign) sum.setSign(bignumber.sign.negative);
+        else sum.sign = bignumber.sign.positive;
+
+        return sum;
     }
 
     bigInt divide(bigInt a) {
@@ -178,11 +208,15 @@ public class bigInt {
     public static void main(String[] args) {
         bigInt a = bigInt.fromString("473246187432742884343324823");
         bigInt b = bigInt.fromString("293482384327647323824343434");
+        bigInt c = bigInt.fromString("473246187432742884343324823");
+        bigInt d = bigInt.fromString("-293482384327647323824343434");
 
         bigInt sum = a.add(b);
         bigInt alo = b.subtract(a);
+        bigInt zarb = c.multiply(d);
         System.out.println(sum);
         System.out.println(alo);
+        System.out.println(zarb);
     }
 
 
