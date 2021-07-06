@@ -114,6 +114,36 @@ public class bigInt {
         return new bigInt(removeZeroFromEnd(sum.digits), sum.sign);
     }
 
+    bigInt divide(bigInt divisor) {
+        bigInt dividend = this;
+        // Definition final result sign
+        final sign resSign = bigInt.signDefinition(divisor.sign , dividend.sign);
+        // To solve the problem of unequal signs
+        dividend.setSign(bignumber.sign.positive);
+        divisor.setSign(bignumber.sign.positive);
+        StringBuilder quotient = new StringBuilder();
+        StringBuilder tempDividend = new StringBuilder();
+        // check divisor != 0 and len of dividend >= divisor
+        if (dividend.compareDivisorAndDividend(divisor)) return bigInt.fromString("0");
+        for (int i = dividend.digits.length - 1; i >= 0; i--) {
+            tempDividend.append(Integer.toString(dividend.digits[i]));
+            while (bigInt.fromString(tempDividend.toString()).compareDivisorAndDividend(divisor) && i-1 >= 0){
+                tempDividend.append(Integer.toString(dividend.digits[--i]));
+                quotient.append("0");
+            }
+            bigInt bigTempDividend = bigInt.fromString(tempDividend.toString());
+            String tempQuotient = Integer.toString(bigTempDividend.findTempQuotient(divisor));
+            quotient.append(tempQuotient);
+            bigTempDividend = bigTempDividend.subtract(bigInt.fromString(tempQuotient).multiply(divisor));
+            tempDividend.setLength(0);
+            tempDividend.append(bigTempDividend.toString());
+        }
+        bigInt finalQuotient = bigInt.fromString(quotient.toString());
+        finalQuotient.setDigits(bigInt.removeZeroFromEnd(finalQuotient.digits));
+        finalQuotient.setSign(resSign);
+        return finalQuotient;
+    }
+
     bigInt divide2(bigInt a) {
         bigInt dividend = this, divisor = a;
         dividend.setSign(bignumber.sign.positive);
@@ -174,7 +204,7 @@ public class bigInt {
         return new bigInt(quotient, bignumber.sign.positive);
     }
 
-    
+
 
     // create bigInt from String
     public static bigInt fromString(String s) {
@@ -208,8 +238,7 @@ public class bigInt {
     public String toString() {
         StringBuilder str = new StringBuilder();
         // append sign
-        if (sign == bignumber.sign.positive) str.append("+");
-        else str.append("-");
+        if (sign != bignumber.sign.positive) str.append("-");
         // append digits
         for (int i = digits.length - 1; i >= 0; i--) {
             str.append(digits[i]);
@@ -296,12 +325,40 @@ public class bigInt {
         return arrayWithoutZero;
     }
 
+    private static bignumber.sign signDefinition(bignumber.sign sign1 , bignumber.sign sign2){
+        if (sign1 != sign2) return bignumber.sign.negative;
+        else return bignumber.sign.positive;
+    }
+
+    private boolean compareDivisorAndDividend(bigInt divisor) {
+        bigInt[] sortedBigInts = bigInt.sort(this, divisor);
+        bigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
+        if (!this.equals(larger)) return true;
+        if (divisor.equals(bigInt.fromString("0"))) throw new IllegalArgumentException("Argument 'divisor' is 0");
+        return false;
+
+    }
+
+    private int findTempQuotient(bigInt divisor){
+        // this -> tempDividend
+        int i = 1;
+        bigInt multiplyRes = divisor.multiply(bigInt.fromString(Integer.toString(i)));
+        bigInt[] sortedBigInts = bigInt.sort(this , multiplyRes);
+        while (this.equals(sortedBigInts[0])) {
+            i++;
+            multiplyRes = divisor.multiply(bigInt.fromString(Integer.toString(i)));
+            sortedBigInts = bigInt.sort(this , multiplyRes);
+        }
+
+        return i-1;
+    }
+
 
     public static void main(String[] args) {
         bigInt a = bigInt.fromString("473246187432742884343324823");
         bigInt b = bigInt.fromString("293482384327647323824343434");
-        bigInt c = bigInt.fromString("138889419461730068178527079418521936494040048569262182");
-        bigInt d = bigInt.fromString("293482384327647323824343434");
+        bigInt c = bigInt.fromString("-1388894194617300681343434342594984656586758653897526947358905820952785270794138889419461730068178527079418521936494040048569262182");
+        bigInt d = bigInt.fromString("-29348235252389584327647323824343434");
 
         bigInt sum = c.add(d);
         bigInt alo = b.subtract(a);
