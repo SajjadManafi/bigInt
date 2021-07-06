@@ -54,17 +54,25 @@ public class bigInt {
     bigInt subtract(bigInt a) {
         bigInt[] sortedBigInts = bigInt.sort(a, this);
         bigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
+        sign sign = bignumber.sign.positive;
+        if (larger == a) sign = bignumber.sign.negative;
         byte[] resDigits = new byte[larger.digits.length];
-        int one, two, sum = 0, j = 0;
+        int one, two;
         for (int i  = 0; i < larger.digits.length; i++) {
             one = larger.digits[i];
+            two = 0;
             if (i < smaller.digits.length) two = smaller.digits[i];
+
+            if (one - two < 0) {
+                larger.getTempNumberIndex(i);
+                one += 10;
+            }
+
+            resDigits[i] = (byte)(one - two);
 
 
         }
-
-
-        return bigInt.fromString("+1");
+        return new bigInt(resDigits , sign);
     }
 
     bigInt multyply(bigInt a) {
@@ -140,7 +148,7 @@ public class bigInt {
             sortedBigInts[1] = a;
         } else {
 
-            for (int i = 0; i < a.digits.length; i++) {
+            for (int i = a.digits.length -1 ; i >= 0; i--) {
                 if ((int) a.digits[i] > (int) b.digits[i]) {
                     break;
                 } else if ((int) a.digits[i] < (int) b.digits[i]) {
@@ -153,21 +161,28 @@ public class bigInt {
         return sortedBigInts;
     }
 
-    private int getTempNumberIndex(bigInt number , int currentState , int toSubtract){
-        for (int i = currentState + 1; i < number.digits.length; i++) {
-            if ((int) number.digits[i] - toSubtract >= 0) return i;
+    private void getTempNumberIndex(int currentState){
+        for (int i = currentState + 1; i < digits.length; i++) {
+            if ((int) digits[i] > 0) {
+                digits[i] -= 1;
+                for (int j = i-1; j > currentState; j--) {
+                    digits[j] += 9;
+                }
+                break;
+            }
         }
-        return -1;
+
     }
 
 
     public static void main(String[] args) {
-        bigInt a = bigInt.fromString("5848574752764137329329319585465645374314813493818197547245531");
-        bigInt b = bigInt.fromString("5848574752764137329329319585465645374314813493818197547245532");
+        bigInt a = bigInt.fromString("473246187432742884343324823");
+        bigInt b = bigInt.fromString("293482384327647323824343434");
 
         bigInt sum = a.add(b);
-        bigInt alo = a.subtract(b);
+        bigInt alo = b.subtract(a);
         System.out.println(sum);
+        System.out.println(alo);
     }
 
 
