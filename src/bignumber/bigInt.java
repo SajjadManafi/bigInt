@@ -2,6 +2,7 @@ package bignumber;
 
 import java.lang.Math;
 import java.util.Arrays;
+import java.math.BigInteger;
 
 public class bigInt {
 
@@ -143,68 +144,7 @@ public class bigInt {
         finalQuotient.setSign(resSign);
         return finalQuotient;
     }
-
-    bigInt divide2(bigInt a) {
-        bigInt dividend = this, divisor = a;
-        dividend.setSign(bignumber.sign.positive);
-        divisor.setSign(bignumber.sign.positive);
-        int maxLen = bigInt.max(dividend, divisor).digits.length;
-        byte[] quotient = new byte[maxLen];
-        bigInt[] sortedBigInts = bigInt.sort(dividend, divisor);
-        bigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
-        if (!dividend.equals(larger)) return bigInt.fromString("0");
-        if (divisor.equals(bigInt.fromString("0"))) throw new IllegalArgumentException("Argument 'divisor' is 0");
-        int state = 0;
-        while (dividend.equals(larger) && dividend.sign == bignumber.sign.positive) {
-            for (int i = 0; i < dividend.digits.length; i++) {
-                if (dividend.sign == bignumber.sign.positive) {
-                    byte[] splittedDividend = new byte[i + 1];
-                    int d = 0;
-                    for (int j = dividend.digits.length - 1; j >= dividend.digits.length - 1 - i; j--) {
-                        splittedDividend[d++] = dividend.digits[j];
-                    }
-                    bigInt.reverse(splittedDividend);
-                    bigInt tempDividend = new bigInt(splittedDividend, bignumber.sign.positive);
-                    bigInt[] sortedDividendAndDivisor = bigInt.sort(divisor, tempDividend);
-                    if (!tempDividend.equals(sortedDividendAndDivisor[0])) continue;
-                    else {
-
-                        for (int j = 1; j < Integer.MAX_VALUE; j++) {
-                            bigInt tempQuotient = bigInt.fromString(Integer.toString(j));
-                            bigInt multiplyRes = tempQuotient.multiply(divisor);
-                            bigInt[] sortedMultiAndtempDividend = bigInt.sort(multiplyRes, tempDividend);
-
-                            if (tempDividend.equals(sortedMultiAndtempDividend[0])) continue;
-                            else {
-                                tempQuotient = bigInt.fromString(Integer.toString(j - 1));
-                                quotient[state++] = (byte) (j - 1);
-
-                                multiplyRes = tempQuotient.multiply(divisor);
-                                multiplyRes.setSign(bignumber.sign.negative);
-                                bigInt tempRemainder = tempDividend.subtract(multiplyRes);
-                                int RemainderMultiplyPow = (int) Math.pow(10.0, (double) (dividend.digits.length - tempDividend.digits.length));
-                                bigInt RemainderForAddToDividend = tempRemainder.multiply(bigInt.fromString(Integer.toString(RemainderMultiplyPow)));
-                                int tDivdendFSPow = (int) Math.pow(10.0, (double) (tempDividend.digits.length - 1));
-                                bigInt tempDividendForSubtract = tempDividend.multiply(bigInt.fromString(Integer.toString(tDivdendFSPow)));
-                                dividend = dividend.subtract(tempDividendForSubtract).add(RemainderForAddToDividend);
-                                break;
-                            }
-                        }
-                    }
-                }
-                else break;
-            }
-
-
-            sortedBigInts = bigInt.sort(dividend, divisor);
-            larger = sortedBigInts[0];
-            smaller = sortedBigInts[1];
-        }
-
-        return new bigInt(quotient, bignumber.sign.positive);
-    }
-
-
+    
 
     // create bigInt from String
     public static bigInt fromString(String s) {
