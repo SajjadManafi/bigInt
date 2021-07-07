@@ -162,6 +162,21 @@ public class bigInt {
         return this.subtract(this.divide(number).multiply(number));
     }
 
+    static bigInt modPow(bigInt base, bigInt exponent, bigInt number) {
+        base = base.mod(number);
+        bigInt result = bigInt.fromString("1");
+
+        while (exponent.isGreaterThan(bigInt.fromString("0"))) {
+            if (!exponent.isEven()) {
+                result = (result.multiply(base)).mod(number);
+            }
+
+            exponent = exponent.divide(bigInt.fromString("2"));
+            base = (base.multiply(base)).mod(number);
+        }
+        return result;
+    }
+
 
     // create bigInt from String
     public static bigInt fromString(String s) {
@@ -312,6 +327,7 @@ public class bigInt {
     }
 
     private boolean isGreaterThanWithoutSign(bigInt secondNumber){
+        if (Arrays.equals(this.digits , secondNumber.digits)) return false;
         bigInt[] sortedBigInts = bigInt.sort(this, secondNumber);
         bigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
         bigInt templarger = larger;
@@ -322,6 +338,18 @@ public class bigInt {
         else return false;
 
     }
+    private boolean isGreaterThan(bigInt secondNumber) {
+        if (Arrays.equals(this.digits , secondNumber.digits)) return false;
+        else if (this.sign == bignumber.sign.positive && secondNumber.sign == bignumber.sign.negative && !this.equals(bigInt.fromString("0")) && !secondNumber.equals(bigInt.fromString("0")))
+            return true;
+        else if (this.sign == bignumber.sign.negative && secondNumber.sign == bignumber.sign.positive && !this.equals(bigInt.fromString("0")) && !secondNumber.equals(bigInt.fromString("0")))
+            return false;
+        else return this.isGreaterThanWithoutSign(secondNumber);
+    }
+
+    private boolean isEven() {
+        return digits[0] == (byte) 0 || digits[0] == (byte) 2 || digits[0] == (byte) 4 || digits[0] == (byte) 6 || digits[0] == (byte) 8;
+    }
 
 
     public static void main(String[] args) {
@@ -330,16 +358,21 @@ public class bigInt {
         bigInt c = bigInt.fromString("-1388894194617300681343434342594984656586758653897526947358905820952785270794138889419461730068178527079418521936494040048569262182");
         bigInt d = bigInt.fromString("-29348235252389584327647323824343434");
 
-        bigInt f = bigInt.fromString("34");
 
-        bigInt sum = c.add(d);
-        bigInt alo = b.subtract(a);
-        bigInt zarb = c.divide(d);
-        bigInt Tavan = d.pow(f);
-        System.out.println(sum);
-        System.out.println(alo);
-        System.out.println(zarb);
-        System.out.println(Tavan);
+        bigInt base = bigInt.fromString("1994");
+        bigInt exponent = bigInt.fromString("30");
+        bigInt MODULO = bigInt.fromString("20");
+        bigInt res = bigInt.modPow(base , exponent , MODULO);
+
+//        bigInt sum = c.add(d);
+//        bigInt alo = b.subtract(a);
+//        bigInt zarb = c.divide(d);
+//        bigInt Tavan = d.pow(f);
+//        System.out.println(sum);
+//        System.out.println(alo);
+//        System.out.println(zarb);
+//        System.out.println(Tavan);
+        System.out.println(res);
     }
 
 
