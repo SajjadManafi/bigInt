@@ -158,6 +158,10 @@ public class bigInt {
 
     }
 
+    bigInt mod(bigInt number) {
+        return this.subtract(this.divide(number).multiply(number));
+    }
+
 
     // create bigInt from String
     public static bigInt fromString(String s) {
