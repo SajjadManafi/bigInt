@@ -1,17 +1,15 @@
-package bignumber;
+package bigint;
 
-import java.lang.Math;
 import java.util.Arrays;
-import java.math.BigInteger;
 
-public class bigInt {
+public class BigInt {
 
     // number digits and sign
     private byte[] digits;
     private sign sign;
 
     // constructor
-    private bigInt(byte[] digits, sign sign) {
+    private BigInt(byte[] digits, sign sign) {
         setDigits(digits);
         setSign(sign);
     }
@@ -22,14 +20,14 @@ public class bigInt {
     }
 
     // sign setter
-    private void setSign(bignumber.sign sign) {
+    private void setSign(bigint.sign sign) {
         this.sign = sign;
     }
 
     // Addition of two numbers
-    bigInt add(bigInt a) {
+    BigInt add(BigInt a) {
         int temp = 0;
-        int maxLen = bigInt.max(a, this).digits.length;
+        int maxLen = BigInt.max(a, this).digits.length;
         byte[] sumDigits = new byte[maxLen + 1];
 
         int one, two, sum = 0, j = 0;
@@ -52,15 +50,15 @@ public class bigInt {
 
         }
 
-        byte[] sumDigitsWZ = bigInt.removeZeroFromEnd(sumDigits);
-        return new bigInt(sumDigitsWZ, sign);
+        byte[] sumDigitsWZ = BigInt.removeZeroFromEnd(sumDigits);
+        return new BigInt(sumDigitsWZ, sign);
     }
 
-    bigInt subtract(bigInt a) {
-        bigInt[] sortedBigInts = bigInt.sort(a, this);
-        bigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
-        sign sign = bignumber.sign.positive;
-        if (larger == a) sign = bignumber.sign.negative;
+    BigInt subtract(BigInt a) {
+        BigInt[] sortedBigInts = BigInt.sort(a, this);
+        BigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
+        sign sign = bigint.sign.positive;
+        if (larger == a) sign = bigint.sign.negative;
         byte[] resDigits = new byte[larger.digits.length];
         int one, two;
         for (int i = 0; i < larger.digits.length; i++) {
@@ -77,12 +75,12 @@ public class bigInt {
 
 
         }
-        byte[] resDigitsWZ = bigInt.removeZeroFromEnd(resDigits);
-        return new bigInt(resDigitsWZ, sign);
+        byte[] resDigitsWZ = BigInt.removeZeroFromEnd(resDigits);
+        return new BigInt(resDigitsWZ, sign);
     }
 
-    bigInt multiply(bigInt a) {
-        bigInt[] multiRes = new bigInt[digits.length];
+    BigInt multiply(BigInt a) {
+        BigInt[] multiRes = new BigInt[digits.length];
 
         for (int i = 0; i < digits.length; i++) {
             int temp = 0, state = 0;
@@ -103,75 +101,75 @@ public class bigInt {
                 resDigits[state++] = (byte) ones;
                 if (d == a.digits.length - 1) resDigits[state] = (byte) temp;
             }
-            bigInt res = new bigInt(resDigits, bignumber.sign.positive);
+            BigInt res = new BigInt(resDigits, bigint.sign.positive);
             multiRes[i] = res;
         }
-        bigInt sum = multiRes[0];
+        BigInt sum = multiRes[0];
         for (int i = 1; i < multiRes.length; i++) {
             sum = sum.add(multiRes[i]);
         }
-        if (a.sign != sign) sum.setSign(bignumber.sign.negative);
-        else sum.sign = bignumber.sign.positive;
-        return new bigInt(removeZeroFromEnd(sum.digits), sum.sign);
+        if (a.sign != sign) sum.setSign(bigint.sign.negative);
+        else sum.sign = bigint.sign.positive;
+        return new BigInt(removeZeroFromEnd(sum.digits), sum.sign);
     }
 
-    bigInt divide(bigInt divisor) {
-        bigInt dividend = this;
+    BigInt divide(BigInt divisor) {
+        BigInt dividend = this;
         // Definition final result sign
-        final sign resSign = bigInt.signDefinition(divisor.sign, dividend.sign);
+        final sign resSign = BigInt.signDefinition(divisor.sign, dividend.sign);
         // To solve the problem of unequal signs
-        dividend.setSign(bignumber.sign.positive);
-        divisor.setSign(bignumber.sign.positive);
+        dividend.setSign(bigint.sign.positive);
+        divisor.setSign(bigint.sign.positive);
         StringBuilder quotient = new StringBuilder();
         StringBuilder tempDividend = new StringBuilder();
         // check divisor != 0 and len of dividend >= divisor
-        if (dividend.compareDivisorAndDividend(divisor)) return bigInt.fromString("0");
+        if (dividend.compareDivisorAndDividend(divisor)) return BigInt.fromString("0");
         for (int i = dividend.digits.length - 1; i >= 0; i--) {
             tempDividend.append(Integer.toString(dividend.digits[i]));
-            while (bigInt.fromString(tempDividend.toString()).compareDivisorAndDividend(divisor) && i - 1 >= 0) {
+            while (BigInt.fromString(tempDividend.toString()).compareDivisorAndDividend(divisor) && i - 1 >= 0) {
                 tempDividend.append(Integer.toString(dividend.digits[--i]));
                 quotient.append("0");
             }
-            bigInt bigTempDividend = bigInt.fromString(tempDividend.toString());
+            BigInt bigTempDividend = BigInt.fromString(tempDividend.toString());
             String tempQuotient = Integer.toString(bigTempDividend.findTempQuotient(divisor));
             quotient.append(tempQuotient);
-            bigTempDividend = bigTempDividend.subtract(bigInt.fromString(tempQuotient).multiply(divisor));
+            bigTempDividend = bigTempDividend.subtract(BigInt.fromString(tempQuotient).multiply(divisor));
             tempDividend.setLength(0);
             tempDividend.append(bigTempDividend.toString());
         }
-        bigInt finalQuotient = bigInt.fromString(quotient.toString());
-        finalQuotient.setDigits(bigInt.removeZeroFromEnd(finalQuotient.digits));
+        BigInt finalQuotient = BigInt.fromString(quotient.toString());
+        finalQuotient.setDigits(BigInt.removeZeroFromEnd(finalQuotient.digits));
         finalQuotient.setSign(resSign);
         return finalQuotient;
     }
 
-    bigInt pow(bigInt number) {
-        if(number.sign == bignumber.sign.negative) throw new IllegalArgumentException("Exponent can't be negative");
-        bigInt result = bigInt.fromString("1");
-        bigInt tempNumber = number;
-        while(tempNumber.isGreaterThanWithoutSign(bigInt.fromString("0"))){
+    BigInt pow(BigInt number) {
+        if(number.sign == bigint.sign.negative) throw new IllegalArgumentException("Exponent can't be negative");
+        BigInt result = BigInt.fromString("1");
+        BigInt tempNumber = number;
+        while(tempNumber.isGreaterThanWithoutSign(BigInt.fromString("0"))){
             result = result.multiply(this);
-            tempNumber = tempNumber.subtract(bigInt.fromString("1"));
+            tempNumber = tempNumber.subtract(BigInt.fromString("1"));
         }
 
         return result;
 
     }
 
-    bigInt mod(bigInt number) {
+    BigInt mod(BigInt number) {
         return this.subtract(this.divide(number).multiply(number));
     }
 
-    static bigInt modPow(bigInt base, bigInt exponent, bigInt number) {
+    static BigInt modPow(BigInt base, BigInt exponent, BigInt number) {
         base = base.mod(number);
-        bigInt result = bigInt.fromString("1");
+        BigInt result = BigInt.fromString("1");
 
-        while (exponent.isGreaterThan(bigInt.fromString("0"))) {
+        while (exponent.isGreaterThan(BigInt.fromString("0"))) {
             if (!exponent.isEven()) {
                 result = (result.multiply(base)).mod(number);
             }
 
-            exponent = exponent.divide(bigInt.fromString("2"));
+            exponent = exponent.divide(BigInt.fromString("2"));
             base = (base.multiply(base)).mod(number);
         }
         return result;
@@ -179,10 +177,10 @@ public class bigInt {
 
 
     // create bigInt from String
-    public static bigInt fromString(String s) {
+    public static BigInt fromString(String s) {
 
         boolean hasSign = false;
-        sign sign = bignumber.sign.positive;
+        sign sign = bigint.sign.positive;
         int StrLen = s.length();
         int remove = 1;
 
@@ -192,7 +190,7 @@ public class bigInt {
             StrLen -= 1;
 
             if (s.charAt(0) == '-')
-                sign = bignumber.sign.negative;
+                sign = bigint.sign.negative;
         }
         byte[] digits = new byte[StrLen];
         int j = 0;
@@ -202,7 +200,7 @@ public class bigInt {
             if (!Character.isDigit(s.charAt(i))) throw new IllegalArgumentException("Bad Number: " + s);
             digits[j++] = (byte) (s.charAt(s.length() - i - remove) - '0');
         }
-        return new bigInt(digits, sign);
+        return new BigInt(digits, sign);
     }
 
     // to String
@@ -210,7 +208,7 @@ public class bigInt {
     public String toString() {
         StringBuilder str = new StringBuilder();
         // append sign
-        if (sign != bignumber.sign.positive) str.append("-");
+        if (sign != bigint.sign.positive) str.append("-");
         // append digits
         for (int i = digits.length - 1; i >= 0; i--) {
             str.append(digits[i]);
@@ -219,20 +217,20 @@ public class bigInt {
     }
 
     // getting a larger number between two numbers
-    private static bigInt max(bigInt a, bigInt b) {
+    private static BigInt max(BigInt a, BigInt b) {
         if (a.digits.length >= b.digits.length) return a;
         else return b;
     }
 
     // getting a smaller number between two numbers
-    private static bigInt min(bigInt a, bigInt b) {
+    private static BigInt min(BigInt a, BigInt b) {
         if (a.digits.length <= b.digits.length) return a;
         else return b;
     }
 
     // sort larger to smaller
-    private static bigInt[] sort(bigInt a, bigInt b) {
-        bigInt[] sortedBigInts = new bigInt[2];
+    private static BigInt[] sort(BigInt a, BigInt b) {
+        BigInt[] sortedBigInts = new BigInt[2];
         sortedBigInts[0] = a;
         sortedBigInts[1] = b;
         if (a.digits.length > b.digits.length) {
@@ -297,52 +295,52 @@ public class bigInt {
         return arrayWithoutZero;
     }
 
-    private static bignumber.sign signDefinition(bignumber.sign sign1, bignumber.sign sign2) {
-        if (sign1 != sign2) return bignumber.sign.negative;
-        else return bignumber.sign.positive;
+    private static bigint.sign signDefinition(bigint.sign sign1, bigint.sign sign2) {
+        if (sign1 != sign2) return bigint.sign.negative;
+        else return bigint.sign.positive;
     }
 
-    private boolean compareDivisorAndDividend(bigInt divisor) {
-        bigInt[] sortedBigInts = bigInt.sort(this, divisor);
-        bigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
+    private boolean compareDivisorAndDividend(BigInt divisor) {
+        BigInt[] sortedBigInts = BigInt.sort(this, divisor);
+        BigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
         if (!this.equals(larger)) return true;
-        if (divisor.equals(bigInt.fromString("0"))) throw new IllegalArgumentException("Argument 'divisor' is 0");
+        if (divisor.equals(BigInt.fromString("0"))) throw new IllegalArgumentException("Argument 'divisor' is 0");
         return false;
 
     }
 
 
-    private int findTempQuotient(bigInt divisor) {
+    private int findTempQuotient(BigInt divisor) {
         // this -> tempDividend
         int i = 1;
-        bigInt multiplyRes = divisor.multiply(bigInt.fromString(Integer.toString(i)));
-        bigInt[] sortedBigInts = bigInt.sort(this, multiplyRes);
+        BigInt multiplyRes = divisor.multiply(BigInt.fromString(Integer.toString(i)));
+        BigInt[] sortedBigInts = BigInt.sort(this, multiplyRes);
         while (this.equals(sortedBigInts[0])) {
             i++;
-            multiplyRes = divisor.multiply(bigInt.fromString(Integer.toString(i)));
-            sortedBigInts = bigInt.sort(this, multiplyRes);
+            multiplyRes = divisor.multiply(BigInt.fromString(Integer.toString(i)));
+            sortedBigInts = BigInt.sort(this, multiplyRes);
         }
 
         return i - 1;
     }
 
-    private boolean isGreaterThanWithoutSign(bigInt secondNumber){
+    private boolean isGreaterThanWithoutSign(BigInt secondNumber){
         if (Arrays.equals(this.digits , secondNumber.digits)) return false;
-        bigInt[] sortedBigInts = bigInt.sort(this, secondNumber);
-        bigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
-        bigInt templarger = larger;
-        larger.setSign(bignumber.sign.positive);
-        smaller.setSign(bignumber.sign.positive);
+        BigInt[] sortedBigInts = BigInt.sort(this, secondNumber);
+        BigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
+        BigInt templarger = larger;
+        larger.setSign(bigint.sign.positive);
+        smaller.setSign(bigint.sign.positive);
         if (larger.equals(smaller)) return false;
         else if (this.equals(templarger)) return true;
         else return false;
 
     }
-    private boolean isGreaterThan(bigInt secondNumber) {
+    private boolean isGreaterThan(BigInt secondNumber) {
         if (Arrays.equals(this.digits , secondNumber.digits)) return false;
-        else if (this.sign == bignumber.sign.positive && secondNumber.sign == bignumber.sign.negative && !this.equals(bigInt.fromString("0")) && !secondNumber.equals(bigInt.fromString("0")))
+        else if (this.sign == bigint.sign.positive && secondNumber.sign == bigint.sign.negative && !this.equals(BigInt.fromString("0")) && !secondNumber.equals(BigInt.fromString("0")))
             return true;
-        else if (this.sign == bignumber.sign.negative && secondNumber.sign == bignumber.sign.positive && !this.equals(bigInt.fromString("0")) && !secondNumber.equals(bigInt.fromString("0")))
+        else if (this.sign == bigint.sign.negative && secondNumber.sign == bigint.sign.positive && !this.equals(BigInt.fromString("0")) && !secondNumber.equals(BigInt.fromString("0")))
             return false;
         else return this.isGreaterThanWithoutSign(secondNumber);
     }
@@ -353,16 +351,16 @@ public class bigInt {
 
 
     public static void main(String[] args) {
-        bigInt a = bigInt.fromString("473246187432742884343324823");
-        bigInt b = bigInt.fromString("293482384327647323824343434");
-        bigInt c = bigInt.fromString("-1388894194617300681343434342594984656586758653897526947358905820952785270794138889419461730068178527079418521936494040048569262182");
-        bigInt d = bigInt.fromString("-29348235252389584327647323824343434");
+        BigInt a = BigInt.fromString("473246187432742884343324823");
+        BigInt b = BigInt.fromString("293482384327647323824343434");
+        BigInt c = BigInt.fromString("-1388894194617300681343434342594984656586758653897526947358905820952785270794138889419461730068178527079418521936494040048569262182");
+        BigInt d = BigInt.fromString("-29348235252389584327647323824343434");
 
 
-        bigInt base = bigInt.fromString("1994");
-        bigInt exponent = bigInt.fromString("30");
-        bigInt MODULO = bigInt.fromString("20");
-        bigInt res = bigInt.modPow(base , exponent , MODULO);
+        BigInt base = BigInt.fromString("1994");
+        BigInt exponent = BigInt.fromString("30");
+        BigInt MODULO = BigInt.fromString("20");
+        BigInt res = BigInt.modPow(base , exponent , MODULO);
 
 //        bigInt sum = c.add(d);
 //        bigInt alo = b.subtract(a);
