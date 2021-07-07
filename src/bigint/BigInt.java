@@ -1,8 +1,9 @@
 package bigint;
-
 import java.util.Arrays;
 
-public class BigInt {
+
+
+public class BigInt{
 
     // number digits and sign
     private byte[] digits;
@@ -362,13 +363,13 @@ public class BigInt {
         BigInt MODULO = BigInt.fromString("20");
         BigInt res = BigInt.modPow(base , exponent , MODULO);
 
-//        bigInt sum = c.add(d);
-//        bigInt alo = b.subtract(a);
-//        bigInt zarb = c.divide(d);
-//        bigInt Tavan = d.pow(f);
-//        System.out.println(sum);
-//        System.out.println(alo);
-//        System.out.println(zarb);
+        BigInt sum = c.add(d);
+        BigInt alo = b.subtract(a);
+        BigInt zarb = c.divide(d);
+//        BigInt Tavan = d.pow(f);
+        System.out.println(sum);
+        System.out.println(alo);
+        System.out.println(zarb);
 //        System.out.println(Tavan);
         System.out.println(res);
     }
