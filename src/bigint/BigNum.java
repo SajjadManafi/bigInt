@@ -8,8 +8,8 @@ public class BigNum{
 
     private File file;
 
-    private ArrayList<BigInt> bigInts = new ArrayList<>();
-    private ArrayList<String> variablesName = new ArrayList<>();
+    private static ArrayList<BigInt> bigInts = new ArrayList<>();
+    private static ArrayList<String> variablesName = new ArrayList<>();
 
     private Node root;
 
@@ -49,6 +49,64 @@ public class BigNum{
 
     public ArrayList<String> getVariablesName() {
         return variablesName;
+    }
+
+    private BigInt solve() {
+        if (root.isLeaf()) {
+            return root.getBigInt();
+        }
+        else {
+            return solveBranch(root);
+        }
+    }
+
+    private static BigInt solveBranch(Node node) {
+        if (node.isLeaf()) return node.getBigInt();
+        else {
+            Node left = node.getLeft();
+            BigInt leftNumber;
+            if (left.isLeaf()) {
+                if (left.getBigInt() == null) {
+                    if (left.getContents().equals("+") || left.getContents().equals("*") || left.getContents().equals("/") || left.getContents().equals("-"))
+                        return null;
+                    else {
+                        left.setBigInt(bigInts.get(variablesName.indexOf(left.getContents())));
+                    }
+                }
+                leftNumber = left.getBigInt();
+            }
+            else
+                leftNumber = solveBranch(left);
+
+            left.setLeft(null);
+            Node right = node.getRight();
+            BigInt rightNumber;
+            if (right.isLeaf()) {
+                if (right.getBigInt() == null) {
+                    if (right.getContents().equals("+") || right.getContents().equals("*") || right.getContents().equals("/") || right.getContents().equals("-"))
+                        return null;
+                    else {
+                        right.setBigInt(bigInts.get(variablesName.indexOf(right.getContents())));
+                    }
+                }
+                rightNumber = right.getBigInt();
+            }
+            else
+                rightNumber = solveBranch(right);
+            right.setRight(null);
+
+            return switch (node.getContents()) {
+                case "+" -> leftNumber.add(rightNumber);
+                case "-" -> leftNumber.subtract(rightNumber);
+                case "*" -> leftNumber.multiply(rightNumber);
+                case "/" -> leftNumber.divide(rightNumber);
+                default -> null;
+            };
+
+
+
+
+        }
     }
 
     private Node ReadFileAndParsing() {
@@ -203,6 +261,6 @@ public class BigNum{
         File directoryPath = new File("./testFile.txt");
 
         BigNum bgnm = new BigNum(directoryPath);
-
+        System.out.println(bgnm.solve());
     }
 }
