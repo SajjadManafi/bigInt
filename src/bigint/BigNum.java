@@ -63,6 +63,6 @@ public class BigNum{
     }
 
     private void prioritize(String s) {
-        
+
     }
 }
