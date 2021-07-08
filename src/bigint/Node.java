@@ -2,8 +2,11 @@ package bigint;
 import java.util.ArrayList;
 
 public class Node {
+     // varName or operator
      private String contents;
+     // BigInt
      private BigInt bigInt;
+     // left and right Nodes
      private Node left;
      private Node right;
 
@@ -11,6 +14,7 @@ public class Node {
         return (left == null && right == null);
     }
 
+    // Getters and setters
     public String getContents() {
         return contents;
     }
@@ -27,10 +31,6 @@ public class Node {
         return right;
     }
 
-    public void setContents(String contents) {
-        this.contents = contents;
-    }
-
     public void setBigInt(BigInt bigInt) {
         this.bigInt = bigInt;
     }
@@ -43,6 +43,7 @@ public class Node {
         this.right = right;
     }
 
+    // String to tree
     static Node readTree(ArrayList<String> strArray) {
         Node node = new Node();
 

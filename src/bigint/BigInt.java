@@ -1,8 +1,6 @@
 package bigint;
 import java.util.Arrays;
 
-
-
 public class BigInt{
 
     // number digits and sign
@@ -54,7 +52,7 @@ public class BigInt{
         byte[] sumDigitsWZ = BigInt.removeZeroFromEnd(sumDigits);
         return new BigInt(sumDigitsWZ, sign);
     }
-
+    // Subtraction of two numbers
     BigInt subtract(BigInt a) {
         BigInt[] sortedBigInts = BigInt.sort(a, this);
         BigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
@@ -79,7 +77,7 @@ public class BigInt{
         byte[] resDigitsWZ = BigInt.removeZeroFromEnd(resDigits);
         return new BigInt(resDigitsWZ, sign);
     }
-
+    // Multiplication of two numbers
     BigInt multiply(BigInt a) {
         BigInt[] multiRes = new BigInt[digits.length];
 
@@ -113,7 +111,7 @@ public class BigInt{
         else sum.sign = bigint.sign.positive;
         return new BigInt(removeZeroFromEnd(sum.digits), sum.sign);
     }
-
+    // Division of two numbers
     BigInt divide(BigInt divisor) {
         BigInt dividend = this;
         // Definition final result sign
@@ -143,7 +141,7 @@ public class BigInt{
         finalQuotient.setSign(resSign);
         return finalQuotient;
     }
-
+    // Power
     BigInt pow(BigInt number) {
         if(number.sign == bigint.sign.negative) throw new IllegalArgumentException("Exponent can't be negative");
         BigInt result = BigInt.fromString("1");
@@ -156,11 +154,12 @@ public class BigInt{
         return result;
 
     }
-
+    // Divide remaining (Mod)
     BigInt mod(BigInt number) {
         return this.subtract(this.divide(number).multiply(number));
     }
 
+    // modular exponentiation
     static BigInt modPow(BigInt base, BigInt exponent, BigInt number) {
         base = base.mod(number);
         BigInt result = BigInt.fromString("1");
@@ -254,6 +253,7 @@ public class BigInt{
         return sortedBigInts;
     }
 
+    // get Temp Number Index
     private void getTempNumberIndex(int currentState) {
         for (int i = currentState + 1; i < digits.length; i++) {
             if ((int) digits[i] > 0) {
@@ -266,7 +266,7 @@ public class BigInt{
         }
 
     }
-
+    // reverse byte array
     private static void reverse(byte[] array) {
         if (array == null) {
             return;
@@ -282,7 +282,7 @@ public class BigInt{
             i++;
         }
     }
-
+    // clean BigInt
     private static byte[] removeZeroFromEnd(byte[] array) {
         int index = 0;
         for (int i = array.length - 1; i >= 0; i--) {
@@ -295,12 +295,12 @@ public class BigInt{
         arrayWithoutZero = Arrays.copyOfRange(array, 0, index);
         return arrayWithoutZero;
     }
-
+    // signDefinition
     private static bigint.sign signDefinition(bigint.sign sign1, bigint.sign sign2) {
         if (sign1 != sign2) return bigint.sign.negative;
         else return bigint.sign.positive;
     }
-
+    // compare Divisor And Dividend
     private boolean compareDivisorAndDividend(BigInt divisor) {
         BigInt[] sortedBigInts = BigInt.sort(this, divisor);
         BigInt larger = sortedBigInts[0], smaller = sortedBigInts[1];
@@ -309,8 +309,7 @@ public class BigInt{
         return false;
 
     }
-
-
+    // find Temp Quotient
     private int findTempQuotient(BigInt divisor) {
         // this -> tempDividend
         int i = 1;
@@ -324,7 +323,7 @@ public class BigInt{
 
         return i - 1;
     }
-
+    // is Greater Than Without Sign
     private boolean isGreaterThanWithoutSign(BigInt secondNumber){
         if (Arrays.equals(this.digits , secondNumber.digits)) return false;
         BigInt[] sortedBigInts = BigInt.sort(this, secondNumber);
@@ -337,6 +336,7 @@ public class BigInt{
         else return false;
 
     }
+    // isGreaterThan
     private boolean isGreaterThan(BigInt secondNumber) {
         if (Arrays.equals(this.digits , secondNumber.digits)) return false;
         else if (this.sign == bigint.sign.positive && secondNumber.sign == bigint.sign.negative && !this.equals(BigInt.fromString("0")) && !secondNumber.equals(BigInt.fromString("0")))
@@ -345,34 +345,9 @@ public class BigInt{
             return false;
         else return this.isGreaterThanWithoutSign(secondNumber);
     }
-
+    // is Even
     private boolean isEven() {
         return digits[0] == (byte) 0 || digits[0] == (byte) 2 || digits[0] == (byte) 4 || digits[0] == (byte) 6 || digits[0] == (byte) 8;
     }
-
-
-    public static void main(String[] args) {
-        BigInt a = BigInt.fromString("473246187432742884343324823");
-        BigInt b = BigInt.fromString("293482384327647323824343434");
-        BigInt c = BigInt.fromString("-1388894194617300681343434342594984656586758653897526947358905820952785270794138889419461730068178527079418521936494040048569262182");
-        BigInt d = BigInt.fromString("-29348235252389584327647323824343434");
-
-
-        BigInt base = BigInt.fromString("1994");
-        BigInt exponent = BigInt.fromString("30");
-        BigInt MODULO = BigInt.fromString("20");
-        BigInt res = BigInt.modPow(base , exponent , MODULO);
-
-        BigInt sum = c.add(d);
-        BigInt alo = b.subtract(a);
-        BigInt zarb = c.divide(d);
-//        BigInt Tavan = d.pow(f);
-        System.out.println(sum);
-        System.out.println(alo);
-        System.out.println(zarb);
-//        System.out.println(Tavan);
-        System.out.println(res);
-    }
-
 
 }

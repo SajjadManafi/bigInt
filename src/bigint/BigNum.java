@@ -5,36 +5,39 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BigNum{
-
+    // File
     private File file;
-
+    // array list of BigInts and variable Name
     private static ArrayList<BigInt> bigInts = new ArrayList<>();
     private static ArrayList<String> variablesName = new ArrayList<>();
-
+    // main node -> root
     private Node root;
 
 
-    public void setRoot(Node root) {
-        this.root = root;
-    }
+
 
     public BigNum(File file) {
         setFile(file);
-        setRoot(ReadFileAndParsing());
+        setRoot(readFileAndParsing());
     }
 
     public BigNum(String filePath){
         File file = new File(filePath);
         setFile(file);
-        setRoot(ReadFileAndParsing());
+        setRoot(readFileAndParsing());
 
+    }
+
+    // setters
+    public void setRoot(Node root) {
+        this.root = root;
     }
 
     private void setFile(File file) {
         this.file = file;
 
     }
-
+    // getters
     private File getFile() {
         return file;
     }
@@ -51,7 +54,8 @@ public class BigNum{
         return variablesName;
     }
 
-    private BigInt solve() {
+    // solve tree
+    public BigInt solve() {
         if (root.isLeaf()) {
             return root.getBigInt();
         }
@@ -59,7 +63,7 @@ public class BigNum{
             return solveBranch(root);
         }
     }
-
+    // solve Branch
     private static BigInt solveBranch(Node node) {
         if (node.isLeaf()) return node.getBigInt();
         else {
@@ -109,7 +113,8 @@ public class BigNum{
         }
     }
 
-    private Node ReadFileAndParsing() {
+    // read file and parsing
+    private Node readFileAndParsing() {
         try {
             Scanner scanner = new Scanner(getFile());
             while (scanner.hasNextLine()) {
@@ -137,6 +142,7 @@ public class BigNum{
         return null;
     }
 
+    // String to array of StringBuilder
     private static ArrayList<StringBuilder> stringToArray(String s) {
         ArrayList<StringBuilder> phrase = new ArrayList<>();
         for (int i = 0; i < s.length(); i++) {
@@ -160,6 +166,7 @@ public class BigNum{
         return phrase;
     }
 
+    // array of StringBuilder to array of string
     private static ArrayList<String> strBuilderArrToStringArr(ArrayList<StringBuilder> stringBuilder) {
         ArrayList<String> str = new ArrayList<>();
         for (int i = 0; i < stringBuilder.size(); i++) {
@@ -169,6 +176,7 @@ public class BigNum{
         return str;
     }
 
+    // prioritize
     private static String prioritize(String s) {
 
         ArrayList<StringBuilder> phrase = BigNum.stringToArray(s);
@@ -254,13 +262,4 @@ public class BigNum{
         return phrase.get(0).toString();
     }
 
-    public static void main(String[] args) {
-//        prioritize("A+B*C+D-E/F");
-//        System.out.println(prioritize("A+B*C+D-E/F*G-R"));
-
-        File directoryPath = new File("./testFile.txt");
-
-        BigNum bgnm = new BigNum(directoryPath);
-        System.out.println(bgnm.solve());
-    }
 }
