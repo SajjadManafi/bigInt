@@ -62,7 +62,112 @@ public class BigNum{
         }
     }
 
-    private void prioritize(String s) {
+    private static String prioritize(String s) {
+        ArrayList<StringBuilder> phrase = new ArrayList<>();
+        for (int i = 0; i < s.length(); i++) {
+            StringBuilder temp = new StringBuilder();
+            boolean isVar = false , end = false;
+            while ((s.charAt(i) >= 'A' && s.charAt(i) <= 'Z' ) || (s.charAt(i) >= 'a' && s.charAt(i) <= 'z' )) {
+                temp.append(s.charAt(i));
+                isVar = true;
+                if (i+1 < s.length()) i++;
+                else {
+                    end = true;
+                    break;
+                }
+
+            }
+            if (!isVar) temp.append(s.charAt(i));
+            else
+                if (!end) i--;
+            phrase.add(temp);
+        }
+
+        // find *
+        int listSize = phrase.size();
+        for (int i = 0; i < listSize; i++) {
+            if (phrase.get(i).toString().equals("*")) {
+                // i -> * , i - 1 -> A , i + 1 -> B
+                StringBuilder temp = new StringBuilder();
+                temp.append("(");
+                temp.append(phrase.get(i-1).toString());
+                temp.append("*");
+                temp.append(phrase.get(i+1).toString());
+                temp.append(")");
+
+                phrase.set(i-1 , temp);
+                phrase.remove(i);
+                phrase.remove(i);
+                listSize = phrase.size();
+                i = -1;
+            }
+        }
+
+        // find /
+        listSize = phrase.size();
+        for (int i = 0; i < listSize; i++) {
+            if (phrase.get(i).toString().equals("/")) {
+                // i -> * , i - 1 -> A , i + 1 -> B
+                StringBuilder temp = new StringBuilder();
+                temp.append("(");
+                temp.append(phrase.get(i-1).toString());
+                temp.append("/");
+                temp.append(phrase.get(i+1).toString());
+                temp.append(")");
+
+                phrase.set(i-1 , temp);
+                phrase.remove(i);
+                phrase.remove(i);
+                listSize = phrase.size();
+                i = -1;
+            }
+        }
+
+        // find +
+        listSize = phrase.size();
+        for (int i = 0; i < listSize; i++) {
+            if (phrase.get(i).toString().equals("+")) {
+                // i -> * , i - 1 -> A , i + 1 -> B
+                StringBuilder temp = new StringBuilder();
+                temp.append("(");
+                temp.append(phrase.get(i-1).toString());
+                temp.append("+");
+                temp.append(phrase.get(i+1).toString());
+                temp.append(")");
+
+                phrase.set(i-1 , temp);
+                phrase.remove(i);
+                phrase.remove(i);
+                listSize = phrase.size();
+                i = -1;
+            }
+        }
+
+        // find *
+        listSize = phrase.size();
+        for (int i = 0; i < listSize; i++) {
+            if (phrase.get(i).toString().equals("-")) {
+                // i -> * , i - 1 -> A , i + 1 -> B
+                StringBuilder temp = new StringBuilder();
+                temp.append("(");
+                temp.append(phrase.get(i-1).toString());
+                temp.append("-");
+                temp.append(phrase.get(i+1).toString());
+                temp.append(")");
+
+                phrase.set(i-1 , temp);
+                phrase.remove(i);
+                phrase.remove(i);
+                listSize = phrase.size();
+                i = -1;
+            }
+        }
+        return phrase.get(0).toString();
+    }
+
+    public static void main(String[] args) {
+//        prioritize("A+B*C+D-E/F");
+        System.out.println(prioritize("A+B*C+D-E/F*G-R"));
 
     }
 }
