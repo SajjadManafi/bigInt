@@ -10,5 +10,6 @@ public class Node {
         return (left == null && right == null);
     }
 
-
+    public Node() {
+    }
 }
